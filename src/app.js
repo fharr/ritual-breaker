@@ -17,6 +17,8 @@ server_io.on('connection', function (server_socket) {
 
     console.log("[SERVER] Player joined : " + server_socket.id);
 
+    server_socket.emit("connected", dtoGenerator.getWorldDto(worldInstance));
+
     server_socket.on('disconnect', function () {
         console.log("[SERVER] Player disconnected : " + server_socket.id);
     });
