@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Platforms - JumpUp!</title>
+    <title>Harvestables - JumpUp!</title>
     <meta charset="utf-8">
     <script src="phaser.min.js"></script>
     <script type="text/javascript">
@@ -23,7 +23,7 @@
 
     <script type="text/javascript">
 
-    var game = new Phaser.Game(640, 480, Phaser.AUTO, 'game');
+    var game = new Phaser.Game(700, 700, Phaser.AUTO, 'game');
 
     //  The Google WebFont Loader will look for this object, so create it before loading the script.
     WebFontConfig = {
@@ -52,33 +52,14 @@
 
         document.removeEventListener('DOMContentLoaded', start, false);
 
-        game.state.add('Boot', Jumpup.Boot);
-        game.state.add('Preloader', Jumpup.Preloader);
-        game.state.add('Game', Jumpup.Game);
-        game.state.add('LevelFinished', Jumpup.LevelFinished);
-        game.state.add('MainMenu', Jumpup.MainMenu);
+        game.state.add('Boot', RitualBreakers.Boot);
+        game.state.add('Preloader', RitualBreakers.Preloader);
+        game.state.add('Game', RitualBreakers.Game);
+        game.state.add('LevelFinished', RitualBreakers.LevelFinished);
+        game.state.add('MainMenu', RitualBreakers.MainMenu);
 
         game.state.start('Boot');
     }
-    
-    // test socket.io connection
-    
-    var socket = io('http://localhost:3001');
-    
-    socket.connect(); 
-
-    // Add a connect listener
-    socket.on('status', function(data) {
-        console.log('Received a message from the server!', data);
-    });
-
-    // Sends a message to the server via sockets
-    function sendMessageToServer(message) {
-        socket.emit('update', message);
-    }
-    
-    sendMessageToServer("yolo");
-
     </script>
 
 </body>

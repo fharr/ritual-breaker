@@ -1,9 +1,9 @@
-var Jumpup = Jumpup || {};
+var RitualBreakers = RitualBreakers || {};
 
-Jumpup.Boot = function (game) {
+RitualBreakers.Boot = function (game) {
 };
 
-Jumpup.Boot.prototype = {
+RitualBreakers.Boot.prototype = {
 
     preload: function () {
 

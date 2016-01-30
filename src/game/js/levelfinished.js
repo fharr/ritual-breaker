@@ -1,13 +1,13 @@
-var Jumpup = Jumpup || {};
+var RitualBreakers = RitualBreakers || {};
 
-Jumpup.LevelFinished = function () {
+RitualBreakers.LevelFinished = function () {
     this.endText = null;
     this.instructions = null;
     this.context = null;
     this.sky = null;
 };
 
-Jumpup.LevelFinished.prototype = {
+RitualBreakers.LevelFinished.prototype = {
 
     init: function(context) {
         this.context = context;
@@ -18,7 +18,7 @@ Jumpup.LevelFinished.prototype = {
 
     create: function () {
 
-        this.sky = this.add.tileSprite(0, 0, 640, 480, 'clouds');
+        this.sky = this.add.tileSprite(0, 0, this.camera.view.width, this.camera.view.width, 'grass');
 
         this.endText = this.createText(this.camera.view.width / 2,
                                        this.camera.view.height / 2,

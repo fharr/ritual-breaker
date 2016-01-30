@@ -1,13 +1,13 @@
-var Jumpup = Jumpup || {};
+var RitualBreakers = RitualBreakers || {};
 
-Jumpup.MainMenu = function () {
+RitualBreakers.MainMenu = function () {
     this.endText = null;
     this.instructions = null;
     this.context = null;
     this.sky = null;
 };
 
-Jumpup.MainMenu.prototype = {
+RitualBreakers.MainMenu.prototype = {
 
     init: function(context) {
         this.context = context;
@@ -19,15 +19,15 @@ Jumpup.MainMenu.prototype = {
     create: function () {
         this.stage.backgroundColor = '#2f9acc';
 
-        this.sky = this.add.tileSprite(0, 0, 640, 480, 'clouds');
+        this.sky = this.add.tileSprite(0, 0, this.camera.view.width, this.camera.view.width, 'grass');
 
         this.startText = this.createText(this.camera.view.width / 2,
                                        this.camera.view.height / 2,
                                        60);
 
         this.instructions = this.createText(this.camera.view.width / 2,
-                                            this.camera.view.height * 0.75,
-                                            45);
+                                            this.camera.view.height / 2,
+                                            60);
 
         this.startText.setText('');
         this.instructions.setText("Press Enter to start");
