@@ -6,17 +6,17 @@ exports.getWorldDto = function(world) {
     
     // dtoType: "enemy" == enemy
     for(var i = 0; i < world.enemies.length; i++) {
-        dtos.push(world.enemies[i], "enemy");
+        dtos.push(getDto(world.enemies[i], "enemy"));
     }
     
     // dtoType: "harvestable"
     for(var i = 0; i < world.harvestables.length; i++) {
-        dtos.push(world.enemies[i], "harvestable");
+        dtos.push(getDto(world.enemies[i], "harvestable"));
     }
     
     // dtoType: "exit"
     for(var i = 0; i < world.exits.length; i++) {
-        dtos.push(world.exits[i], "exit");
+        dtos.push(getDto(world.exits[i], "exit"));
     }
     
     return dtos;
