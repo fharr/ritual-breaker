@@ -1,3 +1,3 @@
-exports.height = 20;
-exports.width = 20;
+exports.height = 10;
+exports.width = 10;
 exports.updateRate = 1000;

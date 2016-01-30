@@ -56,4 +56,4 @@ class World {
     };
 }
 
-exports = World;
+exports.World = World;

@@ -60,7 +60,7 @@ class Witch extends LivingEntity {
     }
     
     update(world) {
-        var target = this.getClosestEntity(world.ennemies);
+        var target = this.getClosestEntity(world.enemies);
         var isEnemy = true;
         
         if (!target) {
@@ -68,7 +68,7 @@ class Witch extends LivingEntity {
             target = this.getClosestEntity(world.harvestables);
             
             if (!target) {
-                target = world.exit;
+                target = this.getClosestEntity(world.exits);
             }
         }
         
@@ -80,11 +80,11 @@ class Witch extends LivingEntity {
         var entity;
         var shortestLength;
 
-        for (var i = 0; entities.length; i++) {
+        for (var i = 0; i < entities.length; i++) {           
             var currentEntity = entities[i];
             var currentLength = pathfinder.getPathLength(this, currentEntity);
             
-            if (currentLength < shortestLength) {
+            if (!shortestLength || currentLength < shortestLength) {
                 entity = currentEntity
             }
         }

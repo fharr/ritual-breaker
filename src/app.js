@@ -1,6 +1,6 @@
 var express = require('express');
 var socket = require('socket.io');
-var World = require('./server/world');
+var world = require('./server/world');
 var param = require('./server/utils/parameters');
 var entities = require('./server/entities');
 
@@ -32,10 +32,14 @@ console.log('Game engine listening on port 3001.')
 //     });
 // });
 
-var worldInstance = new World();
+var worldInstance = new world.World();
 
 // Update loop
 setInterval(function () {
+    console.log("Nb harvestable: " + worldInstance.harvestables.length);
+    console.log("Nb enemies: " + worldInstance.enemies.length);
+    console.log("Nb exits: " + worldInstance.exits.length);
+    
     var witch = worldInstance.witch;
     
     witch.update(worldInstance);

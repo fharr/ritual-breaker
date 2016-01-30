@@ -1,11 +1,11 @@
-exports.getPathLength = function (entity, target){
+exports.getPathLength = function (entity, target){    
     var x_dist = Math.abs(entity.position.x - target.position.x);
     var y_dist = Math.abs(entity.position.y - target.position.y);
     
     return x_dist + y_dist;
 }
     
-exports.moveTo = function (target, entity, world){
+exports.moveTo = function (target, entity, world){    
     var dist_x = target.position.x - entity.position.x;
     var dist_y = target.position.y - entity.position.y;
     
