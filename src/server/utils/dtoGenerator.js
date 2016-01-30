@@ -11,7 +11,7 @@ exports.getWorldDto = function(world) {
     
     // dtoType: "harvestable"
     for(var i = 0; i < world.harvestables.length; i++) {
-        dtos.push(getDto(world.enemies[i], "harvestable"));
+        dtos.push(getDto(world.harvestables[i], "harvestable"));
     }
     
     // dtoType: "exit"
