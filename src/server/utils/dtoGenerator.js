@@ -26,8 +26,8 @@ var getDto = function(entity, type) {
     var dto = {};
     
     dto.id = entity.id;
-    dto.targetX = entity.position.x;
-    dto.targetY = entity.position.y;
+    dto.x = entity.position.x;
+    dto.y = entity.position.y;
     dto.type = type;
 
     return dto;
