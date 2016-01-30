@@ -2,9 +2,15 @@
 
 var pathfinder = require('./utils/pathfinder');
 
+var entityId = 0;
+
 class Entity {   
-      constructor(x, y) {
+    constructor(x, y) {
+        // static id sequence
+        entityId++;
+        
         this.position = {};
+        this.id = entityId;
             
         this.position.x = x;
         this.position.y = y;
