@@ -27,14 +27,15 @@ RitualBreakers.Preloader.prototype = {
         this.load.image('grass', 'assets/grass_tile.png');
         
         // sprites
-        this.load.spritesheet('alpha_wolf', 'assets/alpha_wolf.png', 32, 32);
-        this.load.spritesheet('black_wolf', 'assets/black_wolf.png', 32, 48);
-        this.load.spritesheet('tiny_wolf', 'assets/tiny_wolf.png', 32, 48);
-        this.load.spritesheet('explosion', 'assets/explosion.png', 32, 48);
+        this.load.spritesheet('alpha_wolf', 'assets/alpha_wolf.png', 48, 48);
+        this.load.spritesheet('black_wolf', 'assets/black_wolf.png', 48, 48);
+        this.load.spritesheet('tiny_wolf', 'assets/tiny_wolf.png', 30, 30);
+        this.load.spritesheet('explosion', 'assets/explosion.png', 60, 110);
+        this.load.spritesheet('hit', 'assets/hit.png', 50, 46);
         this.load.spritesheet('fireball', 'assets/fireball.png', 32, 48);
-        this.load.spritesheet('magic_glow', 'assets/magic_glow.png', 32, 48);
-        this.load.spritesheet('plants', 'assets/plants.png', 32, 48);
-        this.load.spritesheet('witch', 'assets/witch.png', 32, 48);
+        this.load.spritesheet('magic_glow', 'assets/magic_glow.png', 32, 32);
+        this.load.spritesheet('plants', 'assets/plants.png', 32, 32);
+        this.load.spritesheet('witch', 'assets/witch.png', 62, 62);
         
         // audios
         // this.load.audio('enemy', 'assets/coin2.mp3');

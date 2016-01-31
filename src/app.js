@@ -11,7 +11,6 @@ var pathfinder = require('./server/utils/pathfinder');
 // ------------------------
 
 var server_io = socket.listen(3001);
-console.log('Game engine listening on port 3001.')
 
 var worldInstance = new world.World();
 

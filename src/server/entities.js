@@ -27,11 +27,15 @@ class Harvestable extends Entity {
         this.effectiveGrowsTime = 0;
     }
     
-    update(world){       
-        this.growsTime++;
-        
-        if(this.isGrown()) {
-            this.lastAction = "grownUp";
+    update(world){ 
+        var wasGrownUp = this.isGrown();
+        if(!wasGrownUp) {
+            this.effectiveGrowsTime++;
+            
+            if(this.isGrown()) {
+                var newAction = new action.Action(this.id, "grownUp", this.position.x, this.position.y);
+                world.actions.push(newAction);
+            }
         }
     }
     
@@ -87,6 +91,7 @@ class Witch extends LivingEntity {
     update(world) {        
         var target = this.getClosestEntity(world.enemies);
         var isEnemy = true;
+        var isHarvestable = false;
         
         if (!target) {
             isEnemy = false;
@@ -103,20 +108,26 @@ class Witch extends LivingEntity {
             
             if (!target) {
                 target = this.getClosestEntity(world.exits);
+            } else {
+                isHarvestable = true;
             }
         }
         
         var distance = pathfinder.getPathLength(this, target);
         
         var newAction = null;
-        
+
         if (distance > 1) {
             pathfinder.moveTo(target, this);
             newAction = new action.Action(this.id, "move", this.position.x, this.position.y);
         } else if (isEnemy) {
             target.life -= this.damage;
             newAction = new action.Action(this.id, "cast", target.position.x, target.position.y);
-        } 
+        } else if (isHarvestable) {
+            newAction = new action.Action(target.id, "harvest", null, null);
+            var idx = world.harvestables.indexOf(target);
+            world.harvestables.splice(idx,1);
+        }
                 
         world.actions.push(newAction);
     }

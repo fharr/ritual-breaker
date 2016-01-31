@@ -7,9 +7,13 @@ RitualBreakers.Game = function () {
     this.enemies = null;
     this.exits = null;
 
+    // sprites
+    this.explosion = null;
+    this.hit = null;
+
     this.context = null;
 
-    this.tweenFree = true;
+    this.actionFree = true;
     
     this.socket;
     
@@ -32,11 +36,20 @@ RitualBreakers.Game.prototype = {
     create: function () {
         this.background = this.add.tileSprite(0, 0, this.world.width, this.world.width, 'grass');
 
+        this.explosion = this.add.sprite(0, 0, "explosion");
+        this.explosion.visible = false;
+        this.explosion.animations.add("boom", null, 20, false);
+        
+        this.hit = this.add.sprite(0, 0, "hit");
+        this.hit.visible = false;
+        this.hit.animations.add("paf", null, 6, false);
+
         this.createGroups();
 
         for (var i = 0; i < this.context.descriptor.length; i++) {
             
             var type = this.context.descriptor[i].type;
+
             if (type === 'harvestable') {
                 this.createHarvestable(this.context.descriptor[i])
             }
@@ -60,7 +73,7 @@ RitualBreakers.Game.prototype = {
                 self.actionBuffer.push(data[i]);   
             }
             
-            if(self.tweenFree){
+            if(self.actionFree){
                 self.nextAction();
             }          
         });
@@ -76,40 +89,58 @@ RitualBreakers.Game.prototype = {
     // perform the next action
     nextAction: function() {
         if(this.actionBuffer.length > 0) {
-            this.tweenFree = false;
+            var self = this;
+            
+            this.actionFree = false;
             
             var action = this.actionBuffer.splice(0,1)[0];
             
-            var tween = null;
-             
-            // TODO : determine action
+            var toComplete = null;
+            console.log(action.action);
             switch(action.action) {
                 case 'move': 
-                    tween = game.add.tween(this.items[action.entityId]).to({x: Math.round(this.scaleX(action.x)), y: Math.round(this.scaleY(action.y))}, 1800);
-                    tween.start();
+                    toComplete = game.add.tween(this.items[action.entityId]).to({x: Math.round(this.scaleX(action.x)), y: Math.round(this.scaleY(action.y))}, 500);
+                    toComplete.start();
                     break;
-                case 'attack':
-                    // TODO
+                case 'attack':               
+                    this.hit.x = this.scaleX(action.x);
+                    this.hit.y = this.scaleY(action.y);
+                    this.hit.visible = true;
+
+                    toComplete = this.hit.play("paf");
+                    toComplete.onComplete.add(function() {
+                        self.hit.visible = false;
+                    }, this);
                     break;
-                case 'cast':
-                    // TODO
+                case 'cast':                
+                    this.explosion.x = this.scaleX(action.x);
+                    this.explosion.y = this.scaleY(action.y);
+                    this.explosion.visible = true;
+                    
+                    toComplete = this.explosion.play("boom");
+                    toComplete.onComplete.add(function() {
+                        self.explosion.visible = false;
+                    }, this);
                     break;
                 case 'death':
-                    // TODO
+                    this.items[action.entityId].kill();
                     break;
                 case 'grownUp':
-                    // TODO
+                    var plant = this.items[action.entityId];                    
+                    plant.play("adult");
                     break;
-                default:
-                    this.tweenFree = true;
-                    break;                
+                case 'harvest':
+                    this.items[action.entityId].kill();
+                    break;
             }
             
-            if(tween){
-                tween.onComplete.add(this.nextAction, this);
+            if(toComplete){
+                toComplete.onComplete.add(this.nextAction, this);
+            } else {
+                this.actionFree = true;
             }
         } else {
-            this.tweenFree = true;
+            this.actionFree = true;
         }
     },
 
@@ -130,9 +161,14 @@ RitualBreakers.Game.prototype = {
 
     // harvestable factory
     createHarvestable: function(descriptor) {
-        this.items[descriptor.id] = 
-            this.harvestables.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'plants');
-
+        var sprite = this.harvestables.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'plants');
+        
+        sprite.animations.add("young", [48, 49, 50, 49, 48], 5, true);
+        sprite.animations.add("adult", [0, 1, 2, 1, 0], 5, true);
+        
+        sprite.play("young");
+        
+        this.items[descriptor.id] = sprite;
     },
 
     // enemy factory
@@ -153,8 +189,13 @@ RitualBreakers.Game.prototype = {
 
     // exit factory
     createExit: function (descriptor) {
-        this.items[descriptor.id] = 
-            this.exits.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'magic_glow');
+        var exit = this.exits.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'magic_glow');
+        
+        exit.animations.add("teleport", [9, 10, 11, 10, 9], 6, true);
+        
+        exit.play('teleport');
+        
+        this.items[descriptor.id] = exit;
     },
 
     // converts the server X coordinate in display X coordinate

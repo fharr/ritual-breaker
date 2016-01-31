@@ -12,17 +12,17 @@ class World {
         
         // create harvestables    
         this.harvestables = new Array();
-    //     
-    //     for(var i = 0; i < param.height; i += 2) {
-    //         var h = new entities.Harvestable(3, i, i+1);
-    //         this.harvestables.push(h);
-    //     }
-    // 
-    //     for(var i = 1; i < param.height; i += 2) {
-    //         var h = new entities.Harvestable(1, i, i+1);
-    //         this.harvestables.push(h);
-    //     }
         
+        for(var i = 1; i < param.height; i += 2) {
+            var h = new entities.Harvestable(3, i, 18+2*i);
+            this.harvestables.push(h);
+        }
+    
+        for(var i = 0; i < param.height; i += 2) {
+            var h = new entities.Harvestable(1, i, 12+8*i);
+            this.harvestables.push(h);
+        }
+    
         // create enemies
         this.enemies = new Array();
         
@@ -35,10 +35,10 @@ class World {
         // create exits
         this.exits = new Array();
         
-        var exit = new entities.Exit(8, 1);
+        var exit = new entities.Exit(9, 0);
         this.exits.push(exit);
         
-        exit = new entities.Exit(8, 8);
+        exit = new entities.Exit(9, 9);
         this.exits.push(exit);
     };
 }
