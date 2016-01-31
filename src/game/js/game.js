@@ -11,6 +11,13 @@ RitualBreakers.Game = function () {
     this.explosion = null;
     this.hit = null;
 
+    // sounds
+    this.grownupSound = null;
+    this.hitSound = null;
+    this.explosionSound = null;
+    this.invokationSound = null;
+    this.ambiance = null;
+
     this.context = null;
 
     this.actionFree = true;
@@ -37,12 +44,20 @@ RitualBreakers.Game.prototype = {
         this.background = this.add.tileSprite(0, 0, this.world.width, this.world.width, 'grass');
 
         this.explosion = this.add.sprite(0, 0, "explosion");
+        this.explosion.anchor.set(0.5);
         this.explosion.visible = false;
         this.explosion.animations.add("boom", null, 20, false);
         
         this.hit = this.add.sprite(0, 0, "hit");
         this.hit.visible = false;
         this.hit.animations.add("paf", null, 6, false);
+
+        this.hitSound = this.add.audio('hit');
+        this.grownupSound = this.add.audio('grownup');
+        this.explosionSound = this.add.audio('explosion');
+        this.invokationSound = this.add.audio('invokation');
+        this.ambiance = this.add.audio('ambiance');
+        this.ambiance.loop = true;
 
         this.createGroups();
 
@@ -78,12 +93,24 @@ RitualBreakers.Game.prototype = {
             }          
         });
         
+        this.socket.removeListener('invokation');
+        this.socket.on('invokation', function(data) {
+            if(data != null) {
+                self.createEnemy(data);
+                self.invokationSound.play();
+            } else {
+                var result = document.getElementById("invokation-result");
+                result.innerText = "Invokation échouée !!!"
+            }
+        });
+        
         this.socket.removeListener('gameover');
         this.socket.on('gameover', function(data) {
             self.context.ending = data;
             self.state.start('LevelFinished', true, false, self.context);
         });
 
+        this.ambiance.play();
     },
 
     // perform the next action
@@ -108,16 +135,27 @@ RitualBreakers.Game.prototype = {
                     this.hit.visible = true;
 
                     toComplete = this.hit.play("paf");
+                    this.hitSound.play();
                     toComplete.onComplete.add(function() {
                         self.hit.visible = false;
                     }, this);
                     break;
                 case 'cast':                
-                    this.explosion.x = this.scaleX(action.x);
+                    this.explosion.x = this.scaleX(action.x) + this.explosion.width / 2;
                     this.explosion.y = this.scaleY(action.y);
+                    
+                    var source = this.items[action.entityId];
+                    
+                    if(source.y > this.scaleY(action.y)) {
+                        this.explosion.angle = 180;
+                    } else {
+                        this.explosion.angle = 0;
+                    }
+                    
                     this.explosion.visible = true;
                     
                     toComplete = this.explosion.play("boom");
+                    this.explosionSound.play();
                     toComplete.onComplete.add(function() {
                         self.explosion.visible = false;
                     }, this);
@@ -128,6 +166,7 @@ RitualBreakers.Game.prototype = {
                 case 'grownUp':
                     var plant = this.items[action.entityId];                    
                     plant.play("adult");
+                    this.grownupSound.play();
                     break;
                 case 'harvest':
                     this.items[action.entityId].kill();

@@ -32,3 +32,5 @@ var getDto = function(entity, type) {
 
     return dto;
 }
+
+exports.getDto = getDto;
