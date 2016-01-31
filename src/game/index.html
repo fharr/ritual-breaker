@@ -14,10 +14,32 @@
 <body>
 
     <div id="game"></div>
-
+    <div>
+        <form onsubmit="return invoke()">
+            <label for="invokation">Cast your spell</label>
+            <input type="text" id="invokation" />
+        </form>
+        <p id="invokation-result"></p>
+    </div>
     <script type="text/javascript">
 
     var game = new Phaser.Game(640, 640, Phaser.AUTO, 'game');
+
+    function invoke() {
+        var input = document.getElementById("invokation");
+        var result = document.getElementById("invokation-result");
+        
+        result.innerText = "";
+        
+        if(input.value == "invokeWolf") {
+            socket.emit('invoke', input);
+        }
+        // TODO : add other commands
+
+        input.value = "";
+                
+        return false;
+    }
 
     //  The Google WebFont Loader will look for this object, so create it before loading the script.
     WebFontConfig = {

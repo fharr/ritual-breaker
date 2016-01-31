@@ -1,4 +1,5 @@
 var RitualBreakers = RitualBreakers || {};
+var socket = null;
 
 RitualBreakers.Preloader = function (game) {
     this.logo = null;
@@ -11,8 +12,9 @@ RitualBreakers.Preloader = function (game) {
 RitualBreakers.Preloader.prototype = {
 
     init: function () {
+        socket = io(':3001');
 
-        this.socket = io(':3001');
+        this.socket = socket;
         this.add.sprite(65, 120, 'logo');
         this.fontLoaded = false;
 
@@ -38,10 +40,11 @@ RitualBreakers.Preloader.prototype = {
         this.load.spritesheet('witch', 'assets/witch.png', 62, 62);
         
         // audios
-        // this.load.audio('enemy', 'assets/coin2.mp3');
-        // this.load.audio('death', 'assets/death.mp3');
-        // this.load.audio('jumping', 'assets/Jump-SoundBible.com-1007297584.mp3');
-        // this.load.audio('levelup', 'assets/243020__plasterbrain__game-start.ogg');
+        this.load.audio('hit', 'assets/hit.wav');
+        this.load.audio('explosion', 'assets/explosion.wav');
+        this.load.audio('grownup', 'assets/grownup.wav');
+        this.load.audio('invokation', 'assets/invokation.wav');
+        this.load.audio('ambiance', 'assets/medieval_8bit.mp3');
 
         //  Note: Graphics are Copyright 2015 Photon Storm Ltd.
         //  Load the Google WebFont Loader script

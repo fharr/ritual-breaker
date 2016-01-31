@@ -13,6 +13,7 @@ var pathfinder = require('./server/utils/pathfinder');
 var server_io = socket.listen(3001);
 
 var worldInstance = new world.World();
+var boucleId = 0;
 
 //Connection from clients
 server_io.on('connection', function (server_socket) {
@@ -20,6 +21,17 @@ server_io.on('connection', function (server_socket) {
     console.log("[SERVER] Player joined : " + server_socket.id);
 
     server_socket.emit("connected", dtoGenerator.getWorldDto(worldInstance));
+
+    server_socket.on('invoke', function() {
+        var dto = null;
+        if(boucleId % 4 == 0){
+            var enemy = new entities.Enemy(8,0,30,5);
+            worldInstance.enemies.push(enemy);
+            dto = dtoGenerator.getDto(enemy, "enemy");
+        }
+        boucleId++;
+        server_socket.emit("invokation", dto);
+    });
 
     server_socket.on('reset', function() {
         server_socket.emit("init", dtoGenerator.getWorldDto(worldInstance));
