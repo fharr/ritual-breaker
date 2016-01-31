@@ -5,6 +5,7 @@ RitualBreakers.Game = function () {
     this.witch = null;
     this.harvestables = null;
     this.enemies = null;
+    this.exits = null;
 
     this.context = null;
 
@@ -53,10 +54,8 @@ RitualBreakers.Game.prototype = {
 
         // Add a status listener
         var self = this;
-        console.log("Socket", this.socket);
         this.socket.removeListener('status');
         this.socket.on('status', function(data) {
-            console.log('Status: ', data);
             for(var i = 0; i < data.length; i++) {
                 self.actionBuffer.push(data[i]);   
             }
@@ -82,16 +81,24 @@ RitualBreakers.Game.prototype = {
             var action = this.actionBuffer.splice(0,1)[0];
             
             var tween = null;
-            
-            console.log("action", action);
-            
+             
             // TODO : determine action
             switch(action.action) {
                 case 'move': 
-                    console.log("entity id", action.entityId);
-                    console.log("sprite?", this.items[action.entityId]);
                     tween = game.add.tween(this.items[action.entityId]).to({x: Math.round(this.scaleX(action.x)), y: Math.round(this.scaleY(action.y))}, 1800);
                     tween.start();
+                    break;
+                case 'attack':
+                    // TODO
+                    break;
+                case 'cast':
+                    // TODO
+                    break;
+                case 'death':
+                    // TODO
+                    break;
+                case 'grownUp':
+                    // TODO
                     break;
                 default:
                     this.tweenFree = true;
@@ -118,6 +125,7 @@ RitualBreakers.Game.prototype = {
     createGroups: function() {
         this.harvestables = this.add.group();
         this.enemies = this.add.group();
+        this.exits = this.add.group();
     },
 
     // harvestable factory
@@ -143,6 +151,12 @@ RitualBreakers.Game.prototype = {
         this.witch.animations.add('right', [5, 6, 7, 8], 10, true);
     },
 
+    // exit factory
+    createExit: function (descriptor) {
+        this.items[descriptor.id] = 
+            this.exits.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'magic_glow');
+    },
+
     // converts the server X coordinate in display X coordinate
     scaleX: function(value) {
         return value * this.world.width / 10
@@ -151,12 +165,6 @@ RitualBreakers.Game.prototype = {
     // converts the server Y coordinate in display Y coordinate
     scaleY: function(value) {
         return value * this.world.height / 10
-    },
-
-    // exit factory
-    createExit: function (descriptor) {
-        //this.items[descriptor.id] = 
-        // TODO create exit  
     },
 
     animateHarvestable: function (harvestable) {

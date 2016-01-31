@@ -29,7 +29,6 @@ RitualBreakers.MainMenu.prototype = {
 
         this.startText.setText('');
         this.instructions.setText("Press Enter to start");
-
     },
 
     createText: function (x, y, fontSize) {
