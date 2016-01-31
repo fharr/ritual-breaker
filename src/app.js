@@ -25,7 +25,7 @@ server_io.on('connection', function (server_socket) {
     server_socket.on('invoke', function() {
         var dto = null;
         if(boucleId % 4 == 0){
-            var enemy = new entities.Enemy(8,0,30,5);
+            var enemy = new entities.Enemy(8,boucleId % 8 == 0 ? 0 : 8,30,5);
             worldInstance.enemies.push(enemy);
             dto = dtoGenerator.getDto(enemy, "enemy");
         }

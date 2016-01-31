@@ -44,6 +44,7 @@ RitualBreakers.Game.prototype = {
         this.background = this.add.tileSprite(0, 0, this.world.width, this.world.width, 'grass');
 
         this.explosion = this.add.sprite(0, 0, "explosion");
+        this.explosion.anchor.set(0.5);
         this.explosion.visible = false;
         this.explosion.animations.add("boom", null, 20, false);
         
@@ -140,8 +141,17 @@ RitualBreakers.Game.prototype = {
                     }, this);
                     break;
                 case 'cast':                
-                    this.explosion.x = this.scaleX(action.x);
+                    this.explosion.x = this.scaleX(action.x) + this.explosion.width / 2;
                     this.explosion.y = this.scaleY(action.y);
+                    
+                    var source = this.items[action.entityId];
+                    
+                    if(source.y > this.scaleY(action.y)) {
+                        this.explosion.angle = 180;
+                    } else {
+                        this.explosion.angle = 0;
+                    }
+                    
                     this.explosion.visible = true;
                     
                     toComplete = this.explosion.play("boom");
