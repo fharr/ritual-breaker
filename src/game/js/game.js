@@ -6,18 +6,15 @@ RitualBreakers.Game = function () {
     this.harvestables = null;
     this.enemies = null;
 
-    this.facing = 'left';
-
-    this.cursors = null;
     this.context = null;
-    // this.levelText = null;
-    // this.scoreText = null;
 
+    this.tweenFree = true;
+    
     this.socket;
+    
+    this.actionBuffer = new Array();
 
     this.items = []; // all sprites: witch, exits, enemies, harvestables
-
-    this.speed = 1.0
 };
 
 RitualBreakers.Game.prototype = {
@@ -26,27 +23,18 @@ RitualBreakers.Game.prototype = {
 
         this.context = context;
 
-        console.log(context)
-
         this.game.renderer.renderSession.roundPixels = true;
 
-        this.world.resize(700, 700);
-
-        this.physics.startSystem(Phaser.Physics.ARCADE);
-
-        this.physics.arcade.skipQuadTree = false;
-
         this.socket = context.socket;
-
     },
 
     create: function () {
-        this.background = this.add.tileSprite(0, 0, this.camera.view.width, this.camera.view.width, 'grass');
+        this.background = this.add.tileSprite(0, 0, this.world.width, this.world.width, 'grass');
 
         this.createGroups();
 
-        for (var i = this.context.descriptor.length - 1; i >= 0; i--) {
-
+        for (var i = 0; i < this.context.descriptor.length; i++) {
+            
             var type = this.context.descriptor[i].type;
             if (type === 'harvestable') {
                 this.createHarvestable(this.context.descriptor[i])
@@ -63,42 +51,60 @@ RitualBreakers.Game.prototype = {
             
         };
 
-        // this.cursors = this.input.keyboard.createCursorKeys();
-
-        var style = { fill: "#ffffff", align: "center", fontSize: 32 };
-
-        // this.scoreText = this.createText(20, 20, this.context.score || '000', style);
-        // this.levelText = this.createText(520, 20, "level " + (this.context.level || '1'), style);
-
-
-        // Add a connect listener
+        // Add a status listener
         var self = this;
+        console.log("Socket", this.socket);
+        this.socket.removeListener('status');
         this.socket.on('status', function(data) {
-            self.updateVelocity(data)
+            console.log('Status: ', data);
+            for(var i = 0; i < data.length; i++) {
+                self.actionBuffer.push(data[i]);   
+            }
+            
+            if(self.tweenFree){
+                self.nextAction();
+            }          
+        });
+        
+        this.socket.removeListener('gameover');
+        this.socket.on('gameover', function(data) {
+            self.context.ending = data;
+            self.state.start('LevelFinished', true, false, self.context);
         });
 
     },
 
-    // update the velocity of moving items, according to the new data received from the server
-    updateVelocity: function(descriptor) {
-        for (var i = descriptor.length - 1; i >= 0; i--) {
-            if(descriptor[i].type === 'witch' || descriptor[i].type === 'enemy') {
-                var sprite = this.items[descriptor[i].id]
-                if(sprite != undefined) {
-
-                    console.log("descriptor[i].x", descriptor[i].x)
-                    console.log("descriptor[i].y", descriptor[i].y)
-                    console.log("sprite.body.position.x", sprite.body.position.x)
-                    console.log("sprite.body.position.y", sprite.body.position.y)
-                    sprite.body.velocity.x = this.speed * Math.round(this.scaleX(descriptor[i].x) - sprite.body.position.x);
-                    sprite.body.velocity.y = this.speed * Math.round(this.scaleY(descriptor[i].y) - sprite.body.position.y);
-                    console.log("sprite.body.velocity.x", sprite.body.velocity.x)
-                    console.log("sprite.body.velocity.y", sprite.body.velocity.y)
-                }
+    // perform the next action
+    nextAction: function() {
+        if(this.actionBuffer.length > 0) {
+            this.tweenFree = false;
+            
+            var action = this.actionBuffer.splice(0,1)[0];
+            
+            var tween = null;
+            
+            console.log("action", action);
+            
+            // TODO : determine action
+            switch(action.action) {
+                case 'move': 
+                    console.log("entity id", action.entityId);
+                    console.log("sprite?", this.items[action.entityId]);
+                    tween = game.add.tween(this.items[action.entityId]).to({x: Math.round(this.scaleX(action.x)), y: Math.round(this.scaleY(action.y))}, 1800);
+                    tween.start();
+                    break;
+                default:
+                    this.tweenFree = true;
+                    break;                
             }
+            
+            if(tween){
+                tween.onComplete.add(this.nextAction, this);
+            }
+        } else {
+            this.tweenFree = true;
         }
     },
-
 
     createText: function(x, y, text, style, size)
     {
@@ -110,40 +116,27 @@ RitualBreakers.Game.prototype = {
 
     // create collision groups
     createGroups: function() {
-        this.harvestables = this.add.physicsGroup();
-        this.harvestables.setAll('body.allowGravity', false);
-        this.harvestables.setAll('body.immovable', true);
-
-        this.enemies = this.add.physicsGroup();
-        this.enemies.setAll('body.allowGravity', false);
-        this.enemies.setAll('body.immovable', true);
+        this.harvestables = this.add.group();
+        this.enemies = this.add.group();
     },
 
     // harvestable factory
     createHarvestable: function(descriptor) {
         this.items[descriptor.id] = 
-            this.harvestables.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'harvestable');
+            this.harvestables.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'plants');
 
     },
 
     // enemy factory
     createEnemy: function (descriptor) {
         this.items[descriptor.id] = 
-            this.enemies.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'enemy');
+            this.enemies.create(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'tiny_wolf');
     },
 
     // witch factory
     createWitch: function (descriptor) {
         this.items[descriptor.id] = 
-            this.witch = this.add.sprite(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'dude');
-
-        this.physics.arcade.enable(this.witch);
-
-        this.witch.body.collideWorldBounds = true;
-        this.witch.body.setSize(20, 32, 5, 16);
-
-        this.witch.body.allowGravity = false;
-        
+            this.witch = this.add.sprite(this.scaleX(descriptor.x), this.scaleY(descriptor.y), 'witch');
 
         this.witch.animations.add('left', [0, 1, 2, 3], 10, true);
         this.witch.animations.add('turn', [4], 20, true);
@@ -152,12 +145,12 @@ RitualBreakers.Game.prototype = {
 
     // converts the server X coordinate in display X coordinate
     scaleX: function(value) {
-        return value * this.camera.view.width / 10
+        return value * this.world.width / 10
     },
 
     // converts the server Y coordinate in display Y coordinate
     scaleY: function(value) {
-        return value * this.camera.view.height / 10
+        return value * this.world.height / 10
     },
 
     // exit factory
@@ -172,14 +165,6 @@ RitualBreakers.Game.prototype = {
     animateEnemies: function (enemy) {
     },
 
-    catchEnemy: function (player, enemy) {
-        console.log("catchEnemy")
-    },
-
-    catchHarvestable: function (player, enemy) {
-        console.log("catchHarvestable")
-    },
-
     removeEnemy: function(enemy) {
         enemy.kill();
     },
@@ -188,9 +173,6 @@ RitualBreakers.Game.prototype = {
 
         this.harvestables.forEach(this.animateHarvestable, this);
         this.enemies.forEach(this.animateEnemies, this);
-
-        this.physics.arcade.collide(this.witch, this.harvestables, this.catchHarvestable, null, this);
-        this.physics.arcade.overlap(this.witch, this.enemies, this.catchEnemy, null, this);
 
         // Shortcuts, for debug only
         // if(this.input.keyboard.isDown(Phaser.Keyboard.U)) {
@@ -205,80 +187,4 @@ RitualBreakers.Game.prototype = {
         // }
 
     },
-
-    movePlayer: function()
-    {
-        // if (this.cursors.left.isDown)
-        // {
-
-        //     this.witch.body.velocity.x = -velocity;
-
-        //     if (this.facing !== 'left')
-        //     {
-        //         this.witch.play('left');
-        //         this.facing = 'left';
-        //     }
-        // }
-        // else if (this.cursors.right.isDown)
-        // {
-        //     this.witch.body.velocity.x = velocity;
-
-        //     if (this.facing !== 'right')
-        //     {
-        //         this.witch.play('right');
-        //         this.facing = 'right';
-        //     }
-        // }
-        // else
-        // {
-        //     if (this.facing !== 'idle')
-        //     {
-        //         this.witch.animations.stop();
-
-        //         if (this.facing === 'left')
-        //         {
-        //             this.witch.frame = 0;
-        //         }
-        //         else
-        //         {
-        //             this.witch.frame = 5;
-        //         }
-
-        //         this.facing = 'idle';
-        //     }
-        // }
-
-    },
-
-
-    die: function(){
-        this.sound.play('death');
-        this.witch.kill();
-        this.context.lives--;
-        if(this.context.lives === 0) {
-            this.context.isGameOver = true;
-            this.context.lives = 3;
-            this.state.start('LevelFinished', true, false, this.context);
-        }
-        else {
-            this.state.start('LevelFinished', true, false, this.context);
-        }
-    },
-
-    levelUp: function() {
-        this.sound.play('levelup');
-        if(this.context.lives < 3) {
-            this.context.lives++;
-        }
-        this.context.isGameFinished = (this.context.level === levels.length - 1);
-        if(this.context.isGameFinished) {
-            this.context.level = 1;
-        }
-        else {
-            this.context.level++;
-        }
-        this.context.isGameOver = false;
-        this.state.start('LevelFinished', true, false, this.context);
-    }
-
 };

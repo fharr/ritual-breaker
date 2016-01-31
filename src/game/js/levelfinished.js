@@ -11,39 +11,31 @@ RitualBreakers.LevelFinished.prototype = {
 
     init: function(context) {
         this.context = context;
+        this.context.restOk = false;
     },
 
     preload: function () {
     },
 
     create: function () {
-
         this.sky = this.add.tileSprite(0, 0, this.camera.view.width, this.camera.view.width, 'grass');
 
         this.endText = this.createText(this.camera.view.width / 2,
                                        this.camera.view.height / 2,
-                                       60);
+                                       30);
 
         this.instructions = this.createText(this.camera.view.width / 2,
                                             this.camera.view.height * 0.75,
                                             45);
-
-        if (this.context.isGameOver)
-        {
-            this.endText.setText("Game Over\nFinal score: " + this.context.score);
-            this.instructions.setText("Press Enter to restart");
-        }
-        else if (this.context.isGameFinished)
-        {
-            this.endText.setText("The End\nFinal score: " + this.context.score);
-            this.instructions.setText("Press Enter to restart");
-        }
-        else
-        {
-            this.endText.setText("Level " + this.context.level + "\nscore: " + this.context.score);
-            this.instructions.setText("Press Enter to start");
-        }
-
+        this.endText.setText("Game Over\nEnding: " + this.context.ending);
+        
+        var self = this;
+        this.context.socket.removeListener('init');
+        this.context.socket.on('init', function(data) {
+            self.resetOk = true;
+            self.context.descriptor = data;
+        });
+        this.context.socket.emit('reset');
     },
 
     createText: function (x, y, fontSize) {
@@ -59,16 +51,14 @@ RitualBreakers.LevelFinished.prototype = {
     },
 
     update: function () {
-        if (this.input.keyboard.isDown(Phaser.Keyboard.ENTER))
-        {
-            if(this.context.isGameOver) {
-                this.context.score = 0;
-                this.context.level = 1;
-                this.context.isGameOver = false;
-                this.state.start('Game', true, false, this.context);
+        if(this.resetOk) {
+            if (this.instructions.text == "") {
+                this.instructions.setText("Press Enter to restart");
             }
-            else
+            
+            if (this.input.keyboard.isDown(Phaser.Keyboard.ENTER))
             {
+                this.context.resetOk = false;
                 this.state.start('Game', true, false, this.context);
             }
         }

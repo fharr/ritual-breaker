@@ -17,8 +17,6 @@ RitualBreakers.MainMenu.prototype = {
     },
 
     create: function () {
-        this.stage.backgroundColor = '#2f9acc';
-
         this.sky = this.add.tileSprite(0, 0, this.camera.view.width, this.camera.view.width, 'grass');
 
         this.startText = this.createText(this.camera.view.width / 2,
@@ -49,9 +47,6 @@ RitualBreakers.MainMenu.prototype = {
     update: function () {
         if (this.input.keyboard.isDown(Phaser.Keyboard.ENTER))
         {
-            this.context.score = 0;
-            this.context.level = 1;
-            this.context.isGameOver = false;
             this.state.start('Game', true, false, this.context);
         }
     }

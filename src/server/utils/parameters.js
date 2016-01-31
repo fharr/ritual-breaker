@@ -1,3 +1,4 @@
-exports.height = 10;
-exports.width = 10;
-exports.updateRate = 1000;
+exports.actionDuration = 2000;
+exports.witchMana = 100;
+exports.witchLife = 100;
+exports.witchDamage = 100;

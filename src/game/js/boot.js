@@ -7,7 +7,7 @@ RitualBreakers.Boot.prototype = {
 
     preload: function () {
 
-        this.load.image('logo', 'assets/photonstorm.png');
+        this.load.image('logo', 'assets/logo.jpg');
         this.load.image('preload', 'assets/preload.png');
 
     },

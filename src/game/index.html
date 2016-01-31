@@ -1,20 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Harvestables - JumpUp!</title>
+    <title>Ritual - Breakers!</title>
     <meta charset="utf-8">
     <script src="phaser.min.js"></script>
-    <script type="text/javascript">
-        var levels = [];
-    </script>
-
     <script type="text/javascript" src="js/boot.js"></script>
     <script type="text/javascript" src="js/preloader.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
     <script type="text/javascript" src="js/levelfinished.js"></script>
     <script type="text/javascript" src="js/mainmenu.js"></script>
-    <script type="text/javascript" src="levels/level1.js"></script>
-    <script type="text/javascript" src="levels/level2.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 </head>
 <body>
@@ -23,7 +17,7 @@
 
     <script type="text/javascript">
 
-    var game = new Phaser.Game(700, 700, Phaser.AUTO, 'game');
+    var game = new Phaser.Game(640, 640, Phaser.AUTO, 'game');
 
     //  The Google WebFont Loader will look for this object, so create it before loading the script.
     WebFontConfig = {
